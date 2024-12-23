@@ -4,6 +4,14 @@ import java.util.Properties
 
 object Aggregator {
   def main(args: Array[String]): Unit = {
+    if (args.length != 2) {
+      println("Usage: UniqueUsersAggregator <start_date> <end_date>")
+      sys.exit(1)
+    }
+
+    val start_date = args(0)
+    val end_date = args(1)
+
     // Paths to Parquet files
     val inputPath = "/opt/spark/events/init/data"
     val outputPath = "/opt/spark/events/aggregated/daily_users"
@@ -15,18 +23,20 @@ object Aggregator {
     connectionProperties.setProperty("password", "password")
     connectionProperties.setProperty("driver", "org.postgresql.Driver")
 
-    val spark = SparkSession.builder
+    // Initialize Spark
+    val spark = SparkSession.builder()
       .appName("Aggregator")
       .getOrCreate()
 
     // Read partitioned Parquet files
+    // Avoid mergeSchema if you know all files have the same schema
     val initEventsDF = spark.read
-      .option("mergeSchema", "true")
+      // .option("mergeSchema", "true") // Remove or disable if not needed
       .parquet(inputPath)
       .select("user_id", "country", "platform", "event_date")
-      .distinct() // Ensure unique users per event_date, country, and platform
+      .filter(col("event_date") >= start_date && col("event_date") < end_date)
 
-    // Perform the aggregation
+    // Perform the aggregation (no need for .distinct() here)
     val aggregatedDF = initEventsDF
       .groupBy("event_date", "country", "platform")
       .agg(countDistinct("user_id").alias("unique_users"))
@@ -40,10 +50,13 @@ object Aggregator {
     println(s"Aggregated data saved to: $outputPath")
 
     // Save the aggregated results to Postgres
+    // Optionally specify batch size or other JDBC options
     aggregatedDF.write
       .mode("overwrite")
       .jdbc(jdbcUrl, "unique_users", connectionProperties)
 
     println("Aggregated data saved to Postgres SQL table 'unique_users'")
+
+    spark.stop()
   }
 }

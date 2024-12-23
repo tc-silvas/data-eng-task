@@ -49,4 +49,5 @@ daily_users_spark:
 	--conf spark.executor.instances=1 \
 	--conf spark.cores.max=1 \
 	--packages org.postgresql:postgresql:42.7.4 \
-	./apps/eventprocessor_2.12-1.0.jar
+	./apps/eventprocessor_2.12-1.0.jar \
+	$(START_DATE) $(END_DATE)
