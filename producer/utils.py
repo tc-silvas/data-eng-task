@@ -2,9 +2,9 @@ import random
 from datetime import datetime, timedelta
 
 # Predefine constants to avoid re-creating lists repeatedly
-DEVICES = ["iPhone", "Samsung Galaxy"]
-PLATFORMS = ["iOS", "Android"]
-COUNTRIES = ["UK", "PT", "BR", "US", "FR", "IT", "ES", "DE"]
+DEVICES = ["iPhone", "Samsung Galaxy", "PC"]
+OS = ["Linux", "Windows", "MacOS"]
+COUNTRIES = ["GB", "PT", "BR", "US", "FR", "IT", "ES", "DE"]
 
 def generate_random_timestamp():
     """
@@ -21,7 +21,8 @@ def generate_postmatch_info():
     Generate random post-match information, including device and platform.
     """
     device = random.choice(DEVICES)
-    platform = "iOS" if device == "iPhone" else "Android"
+    platform = "iOS" if device == "iPhone" else random.choice(OS) if device == "PC" else "Android"
+
     return {
         "coin_balance_after_match": random.randint(0, 10000),
         "level_after_match": random.randint(1, 100),
@@ -33,12 +34,16 @@ def generate_init_event():
     """
     Generate a random 'init' event.
     """
+
+    device = random.choice(DEVICES)
+    platform = "iOS" if device == "iPhone" else random.choice(OS) if device == "PC" else "Android"
+
     return {
         "event_type": "init",
         "time": generate_random_timestamp(),
         "user_id": random.randint(1, 1000),
         "country": random.choice(COUNTRIES),
-        "platform": random.choice(PLATFORMS)
+        "platform": platform
     }
 
 def generate_match_event():

@@ -1,5 +1,6 @@
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions._
+import java.util.Locale
 import java.util.Properties
 
 object Aggregator {
@@ -12,7 +13,7 @@ object Aggregator {
     val start_date = args(0)
     val end_date = args(1)
 
-    // Paths to Parquet files
+    // Parquet paths
     val inputPath = "/opt/spark/events/init/data"
     val outputPath = "/opt/spark/events/aggregated/daily_users"
 
@@ -28,20 +29,35 @@ object Aggregator {
       .appName("Aggregator")
       .getOrCreate()
 
-    // Read partitioned Parquet files
-    // Avoid mergeSchema if you know all files have the same schema
-    val initEventsDF = spark.read
-      // .option("mergeSchema", "true") // Remove or disable if not needed
-      .parquet(inputPath)
-      .select("user_id", "country", "platform", "event_date")
-      .filter(col("event_date") >= start_date && col("event_date") < end_date)
+    // UDF to map country_id to country_name using Locale
+    val mapCountryIdToName = udf { (countryId: String) =>
+      try {
+        val locale = new Locale.Builder().setRegion(countryId).build()
+        Option(locale.getDisplayCountry).filter(_.nonEmpty).getOrElse("Unknown")
+      } catch {
+        case _: Exception => "Unknown"
+      }
+    }
 
-    // Perform the aggregation (no need for .distinct() here)
-    val aggregatedDF = initEventsDF
-      .groupBy("event_date", "country", "platform")
+    // Read partitioned Parquet files, then filter by event_date
+    val initEventsDF = spark.read
+      .parquet(inputPath)
+      .where(col("event_date") >= start_date && col("event_date") <= end_date)
+
+    // Apply transformations in a single select
+    val transformedDF = initEventsDF.select(
+      col("user_id"),
+      mapCountryIdToName(col("country")).as("country_name"),
+      upper(col("platform")).as("platform"),
+      col("event_date")
+    )
+
+    // Aggregate unique users
+    val aggregatedDF = transformedDF
+      .groupBy("event_date", "country_name", "platform")
       .agg(countDistinct("user_id").alias("unique_users"))
 
-    // Save the aggregated data to Parquet files partitioned by event_date
+    // Write results to Parquet, partitioned by event_date
     aggregatedDF.write
       .mode("overwrite")
       .partitionBy("event_date")
@@ -49,13 +65,12 @@ object Aggregator {
 
     println(s"Aggregated data saved to: $outputPath")
 
-    // Save the aggregated results to Postgres
-    // Optionally specify batch size or other JDBC options
+    // Write aggregated results to PostgreSQL
     aggregatedDF.write
       .mode("overwrite")
       .jdbc(jdbcUrl, "unique_users", connectionProperties)
 
-    println("Aggregated data saved to Postgres SQL table 'unique_users'")
+    println("Aggregated data saved to PostgreSQL table 'unique_users'")
 
     spark.stop()
   }
