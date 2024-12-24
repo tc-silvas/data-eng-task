@@ -3,6 +3,7 @@
 commands.txt
 events/
 postgres-data/
+pipeline.drawio
 
 =======
 *.class

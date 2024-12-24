@@ -59,7 +59,7 @@ object Aggregator {
 
     // Add is_mobile flag
     val finalDF = aggregatedDF
-      .withColumn("is_mobile", when(col("platform").isin("ios", "android"), true).otherwise(false))
+      .withColumn("is_mobile", when(col("platform").isin("IOS", "ANDROID"), true).otherwise(false))
 
     // Write results to Parquet, partitioned by event_date
     finalDF.write

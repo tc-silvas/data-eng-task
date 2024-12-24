@@ -55,8 +55,11 @@ object EventProcessor {
     // Postgres connection properties
     val jdbcUrl = "jdbc:postgresql://postgres:5432/game-events"
     val jdbcProperties = new Properties()
+
+    //NOT SECURE
     jdbcProperties.setProperty("user", "user")
     jdbcProperties.setProperty("password", "password")
+
     jdbcProperties.setProperty("driver", "org.postgresql.Driver")
 
     /**
