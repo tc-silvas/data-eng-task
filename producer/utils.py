@@ -71,7 +71,7 @@ def generate_inapp_purchase_event():
     return {
         "event_type": "in_app_purchase",
         "time": generate_random_timestamp(),
-        "purchase_value": round(random.uniform(0.99, 99.99), 2),
+        "purchase_value": round(random.uniform(0.99, 999.99), 2),
         "user_id": random.randint(1, 1000),
         "product_id": f"product_{random.randint(1000, 9999)}"
     }

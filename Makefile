@@ -51,3 +51,14 @@ daily_users_spark:
 	--packages org.postgresql:postgresql:42.7.4 \
 	./apps/eventprocessor_2.12-1.0.jar \
 	$(START_DATE) $(END_DATE)
+transformations:
+	@docker exec spark-master spark-submit \
+	--class DataTransformation \
+	--master spark://spark-master:7077 \
+	--conf spark.executor.cores=1 \
+	--conf spark.driver.cores=1 \
+	--conf spark.executor.instances=1 \
+	--conf spark.cores.max=1 \
+	--packages org.postgresql:postgresql:42.7.4 \
+	./apps/eventprocessor_2.12-1.0.jar \
+	$(START_DATE) $(END_DATE)

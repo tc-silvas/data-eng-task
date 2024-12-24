@@ -57,8 +57,12 @@ object Aggregator {
       .groupBy("event_date", "country_name", "platform")
       .agg(countDistinct("user_id").alias("unique_users"))
 
+    // Add is_mobile flag
+    val finalDF = aggregatedDF
+      .withColumn("is_mobile", when(col("platform").isin("ios", "android"), true).otherwise(false))
+
     // Write results to Parquet, partitioned by event_date
-    aggregatedDF.write
+    finalDF.write
       .mode("overwrite")
       .partitionBy("event_date")
       .parquet(outputPath)
@@ -66,7 +70,7 @@ object Aggregator {
     println(s"Aggregated data saved to: $outputPath")
 
     // Write aggregated results to PostgreSQL
-    aggregatedDF.write
+    finalDF.write
       .mode("overwrite")
       .jdbc(jdbcUrl, "unique_users", connectionProperties)
 

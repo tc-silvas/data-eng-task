@@ -2,12 +2,16 @@
 [0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	log4j.properties[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /home/tcsilva/Documents/src/tiago/data-pipeline-dev/spark/spark-processor/target/scala-2.12/classes/log4j.properties[0m
+[0m[[0m[0mdebug[0m] [0m[0m	DataTransformation.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/tcsilva/Documents/src/tiago/data-pipeline-dev/spark/spark-processor/target/scala-2.12/classes/DataTransformation.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	EventProcessor$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /home/tcsilva/Documents/src/tiago/data-pipeline-dev/spark/spark-processor/target/scala-2.12/classes/EventProcessor$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	EventProcessor.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /home/tcsilva/Documents/src/tiago/data-pipeline-dev/spark/spark-processor/target/scala-2.12/classes/EventProcessor.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Aggregator$$typecreator2$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /home/tcsilva/Documents/src/tiago/data-pipeline-dev/spark/spark-processor/target/scala-2.12/classes/Aggregator$$typecreator2$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	DataTransformation$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/tcsilva/Documents/src/tiago/data-pipeline-dev/spark/spark-processor/target/scala-2.12/classes/DataTransformation$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Aggregator$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /home/tcsilva/Documents/src/tiago/data-pipeline-dev/spark/spark-processor/target/scala-2.12/classes/Aggregator$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Aggregator.class[0m

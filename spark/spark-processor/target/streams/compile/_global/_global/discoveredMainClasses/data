@@ -1,1 +1,1 @@
-["Aggregator","EventProcessor"]
+["Aggregator","DataTransformation","EventProcessor"]
