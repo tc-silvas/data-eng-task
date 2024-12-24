@@ -4,147 +4,196 @@
 
 ## Setup the Environment
 
-1. Clone the repository:
+### 1. Clone the Repository
 
-   ```bash
-   git clone https://github.com/tc-silvas/data-eng-task.git
-   ```
+Clone the repository to your local machine:
 
-2. Navigate to the project directory and bring up the environment by running:
+```bash
+git clone https://github.com/tc-silvas/data-eng-task.git
+```
 
-   ```bash
-   make up
-   ```
+**NOTE:** Ensure that Docker is installed on your machine.
 
-   This will set up the following services:
-   - Zookeeper
-   - Kafka
-   - Spark
-   - PostgreSQL
-   - Kafka Producer
+### 2. Set Up the Environment
 
-3. After the environment is set up, you can check if the Producer is generating data by running the following commands:
+Navigate to the project directory and bring up the environment by running:
 
-   - To initialize events:
-     ```bash
-     make init_events
-     ```
-   - To produce match events:
-     ```bash
-     make match_events
-     ```
-   - To generate in-app purchase (IAP) events:
-     ```bash
-     make iap_event
-     ```
+```bash
+make up
+```
 
-4. Once these commands are executed, visit [localhost:8080](http://localhost:8080) to confirm that the Spark cluster is running.
+This will start the following services:
+- Zookeeper
+- Kafka
+- Spark
+- PostgreSQL
+- Kafka Producer
 
-   If all three commands are producing data, the environment setup is complete and successful.
+### 3. Verify the Producer
+
+After setting up the environment, you can check if the Producer is generating data by running the following commands:
+
+- To initialize events:
+  ```bash
+  make init_events
+  ```
+  
+- To produce match events:
+  ```bash
+  make match_events
+  ```
+
+- To generate in-app purchase (IAP) events:
+  ```bash
+  make iap_event
+  ```
+
+### 4. Confirm Spark Cluster
+
+Once the above commands are executed, visit [localhost:8080](http://localhost:8080) to verify that the Spark cluster is running. If all three commands are producing data, the environment setup is complete and successful.
 
 ---
 
 ## Task
 
-Now, let's run the Spark scripts to process the data. Follow these steps:
+Now, let's process the data using Spark.
 
-1. **Submit the Spark job** to process data from Kafka to the Parquet and PostgreSQL sinks:
+### 1. Submit the Spark Job
 
-   ```bash
-   make submit
-   ```
+To process the data from Kafka to Parquet and PostgreSQL sinks, submit the Spark job by running:
 
-2. Go to [localhost:8080](http://localhost:8080) and verify that the EventProcessor is running. You should see something similar to the following screenshot:
-   
-   ![EventProcessor Screenshot](https://github.com/user-attachments/assets/b72f08f8-3c10-44fb-aef3-109d5d5893e9)
+```bash
+make submit
+```
 
-3. Verify that the data is being stored correctly in Parquet format. Run the following commands to check if folders are partitioned by day:
+### 2. Verify EventProcessor
 
-   ```bash
-   ls events/iap/data
-   ls events/match/data
-   ls events/init/data
-   ```
+Visit [localhost:8080](http://localhost:8080) to verify that the EventProcessor is running. You should see something similar to the screenshot below:
 
-4. After confirming the Parquet data, check if the data is being saved to the PostgreSQL data warehouse. Run the following commands:
+![EventProcessor Screenshot](https://github.com/user-attachments/assets/b72f08f8-3c10-44fb-aef3-109d5d5893e9)
 
-   ```bash
-   make init_events
-   make match_events
-   make iap_events
-   ```
+### 3. Verify Parquet Data
 
-5. To check how many events have been produced, run:
+Check if the data is being stored correctly in Parquet format. Run the following commands to ensure the folders are partitioned by day:
 
-   ```bash
-   make total_events
-   ```
+```bash
+ls events/iap/data
+ls events/match/data
+ls events/init/data
+```
+
+### 4. Verify PostgreSQL Data
+
+To check if data is being saved to the PostgreSQL data warehouse, run the following commands to produce events:
+
+```bash
+make init_events
+make match_events
+make iap_events
+```
+
+### 5. Check Total Events Produced
+
+To see how many events have been produced, run:
+
+```bash
+make total_events
+```
 
 ---
 
 ### Data Transformations and Quality Improvements
 
-Now, we will perform some data transformations, aggregations, and quality improvements.
+We will now perform data transformations, aggregations, and quality improvements.
 
-1. **Get the list of unique users** for the desired date range by running:
+### 1. Get the List of Unique Users
 
-   ```bash
-   make unique_users START_DATE=<start_date> END_DATE=<end_date>
-   ```
+To get the list of unique users for a specified date range, run:
 
-   Example:
+```bash
+make unique_users START_DATE=<start_date> END_DATE=<end_date>
+```
 
-   ```bash
-   make unique_users START_DATE=2024-12-01 END_DATE=2024-12-24
-   ```
+Example:
 
-   You can run this command multiple times for different date ranges.
+```bash
+make unique_users START_DATE=2024-12-01 END_DATE=2024-12-24
+```
 
-2. To verify that the data is aggregated correctly, check the `events/aggregated/daily_users` directory. If the command returns folders partitioned by day, the aggregation is correct:
+You can run this command multiple times for different date ranges.
 
-   ```bash
-   ls events/aggregated/daily_users
-   ```
+### 2. Verify Aggregation
 
-3. To query the PostgreSQL table created for daily unique users on a specific day, run:
+Check if the data is aggregated correctly by verifying the `events/aggregated/daily_users` directory. If the directory contains folders partitioned by day, the aggregation is correct:
 
-   ```bash
-   make daily_users DAY=<desired_day>
-   ```
+```bash
+ls events/aggregated/daily_users
+```
 
-   Example:
+### 3. Query Daily Unique Users
 
-   ```bash
-   make daily_users DAY=2024-12-23
-   ```
+To query the PostgreSQL table for daily unique users on a specific day, run:
 
-4. For data quality improvements, run:
+```bash
+make daily_users DAY=<desired_day>
+```
 
-   ```bash
-   make transformations
-   ```
+Example:
 
-   This script applies the following transformations:
+```bash
+make daily_users DAY=2024-12-23
+```
 
-   | Event Type | Column        | Transformation                                       |
-   |------------|---------------|------------------------------------------------------|
-   | **Init**   | `country`     | Map `country_id` to `country_name` using `Locale`    |
-   |            | `platform`    | Convert to uppercase                                 |
-   |            | Derived Field | Add `is_mobile` flag                                 |
-   | **Match**  | `game-tier`   | Derive `is_tournament` flag (if `game-tier` is 5)    |
-   |            | `platform`    | Convert to uppercase                                 |
-   |            | `device`      | Convert to uppercase                                 |
-   | **IAP**    | Derived Field | Add `purchase_category` and `is_high_value` flag     |
+### 4. Apply Data Transformations
 
-5. To verify the transformed data, run:
+To apply data transformations and quality improvements, run:
 
-   ```bash
-   make match_transformed
-   make iap_transformed
-   ```
+```bash
+make transformations
+```
 
----
+This script applies the following transformations:
 
-With these steps completed, you will have processed, transformed, and improved the data quality of the events.
+| Event Type | Column        | Transformation                                       |
+|------------|---------------|------------------------------------------------------|
+| **Init**   | `country`     | Map `country_id` to `country_name` using `Locale`    |
+|            | `platform`    | Convert to uppercase                                 |
+|            | Derived Field | Add `is_mobile` flag                                 |
+| **Match**  | `game-tier`   | Derive `is_tournament` flag (if `game-tier` is 5)    |
+|            | `platform`    | Convert to uppercase                                 |
+|            | `device`      | Convert to uppercase                                 |
+| **IAP**    | Derived Field | Add `purchase_category` and `is_high_value` flag     |
 
---- 
+### 5. Verify Transformed Data
+
+To verify the transformed data, run:
+
+```bash
+make match_transformed
+make iap_transformed
+```
+
+### 6. Query Other Tables
+
+You can run additional queries on the following PostgreSQL tables if desired:
+
+| Schema | Name             | Type  | Owner  |
+|--------|------------------|-------|--------|
+| public | iap_events       | table | user   |
+| public | iap_transformed  | table | user   |
+| public | init_events      | table | user   |
+| public | match_events     | table | user   |
+| public | match_transformed| table | user   |
+| public | unique_users     | table | user   |
+
+Run the following to connect to PostgreSQL and execute queries:
+
+```bash
+make postgres
+```
+
+Then, execute your desired SQL query. For example:
+
+```sql
+SELECT * FROM iap_events WHERE event_date = '2024-12-23';
+```
