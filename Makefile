@@ -27,7 +27,7 @@ iap_events:
 total_events:
 	@docker exec -it postgres psql -U user -d game-events -c "SELECT init_events, match_events, iap_events, (init_events + match_events + iap_events) as total_events FROM (SELECT (SELECT COUNT(*) FROM init_events) AS init_events, (SELECT COUNT(*) FROM match_events) AS match_events, (SELECT COUNT(*) FROM iap_events) AS iap_events) a;"
 daily_users:
-	@docker exec -it postgres psql -U user -d game-events -c "SELECT country, platform, COUNT(DISTINCT user_id) AS unique_users FROM init_events WHERE (event_date = '$(DAY)') GROUP BY country, platform ORDER BY unique_users DESC;"
+	@docker exec -it postgres psql -U user -d game-events -c "SELECT * FROM  unique_users WHERE (event_date = '$(DAY)');"
 unique_users:
 	@docker exec spark-master spark-submit \
 	--class Aggregator \
@@ -50,3 +50,9 @@ transformations:
 	--packages org.postgresql:postgresql:42.7.4 \
 	./apps/eventprocessor_2.12-1.0.jar \
 	$(START_DATE) $(END_DATE)
+match_transformed:
+	@docker exec -it postgres psql -U user -d game-events -c "select * from match_transformed limit 10;"
+iap_transformed:
+	@docker exec -it postgres psql -U user -d game-events -c "select * from iap_transformed limit 10;"
+postgres:
+	@docker exec -it postgres psql -U user -d game-events
