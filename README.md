@@ -33,19 +33,19 @@ This will start the following services:
 
 After setting up the environment, you can check if the Producer is generating data by running the following commands:
 
-- To initialize events:
+- To init events:
   ```bash
-  make init_events
+  make consume-init
   ```
   
 - To produce match events:
   ```bash
-  make match_events
+  make consume-match
   ```
 
 - To generate in-app purchase (IAP) events:
   ```bash
-  make iap_event
+  make consume-iap
   ```
 
 ### 4. Confirm Spark Cluster
