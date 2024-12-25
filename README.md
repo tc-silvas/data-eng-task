@@ -146,10 +146,16 @@ make daily_users DAY=2024-12-23
 
 ### 4. Apply Data Transformations
 
-To apply data transformations and quality improvements, run:
+To apply data transformations and quality improvements for a specific date range, run:
 
 ```bash
-make transformations
+make transformations START_DATE=<start_date> END_DATE=<end_date>
+```
+
+Example:
+
+```bash
+make transformations START_DATE=2024-12-01 END_DATE=2024-12-24
 ```
 
 This script applies the following transformations:
@@ -196,4 +202,9 @@ Then, execute your desired SQL query. For example:
 
 ```sql
 SELECT * FROM iap_events WHERE event_date = '2024-12-23';
+```
+Finally, to stop the services just run:
+
+```bash
+make down
 ```
