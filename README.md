@@ -33,17 +33,17 @@ This will start the following services:
 
 After setting up the environment, you can check if the Producer is generating data by running the following commands:
 
-- To init events:
+- To consume init events:
   ```bash
   make consume-init
   ```
   
-- To produce match events:
+- To consume match events:
   ```bash
   make consume-match
   ```
 
-- To generate in-app purchase (IAP) events:
+- To consume in-app purchase (IAP) events:
   ```bash
   make consume-iap
   ```
