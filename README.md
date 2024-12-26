@@ -124,7 +124,7 @@ You can run this command multiple times for different date ranges.
 
 ### 2. Verify Aggregation
 
-Check if the data is aggregated correctly by verifying the `events/aggregated/daily_users` directory. If the directory contains folders partitioned by day, the aggregation is correct:
+Check if the data is aggregated correctly by verifying the `events/aggregated/daily_users` directory. If the directory contains folders partitioned by day, the script has run successfully, run:
 
 ```bash
 ls events/aggregated/daily_users
