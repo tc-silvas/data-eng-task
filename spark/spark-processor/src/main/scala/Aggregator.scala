@@ -16,7 +16,7 @@ object Aggregator {
     val end_date = args(1)
 
     // Define input and output paths for Parquet files
-    val inputPath = "/opt/spark/events/init/data"
+    val inputPath = "/opt/spark/events/raw/init/data"
     val outputPath = "/opt/spark/events/aggregated/daily_users"
 
     // Postgres connection properties

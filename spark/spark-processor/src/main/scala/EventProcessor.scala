@@ -14,9 +14,9 @@ object EventProcessor {
     // Define Kafka server and topics
     val kafkaBootstrapServers = "kafka:9092"
     val topics = Map(
-      "init_events"  -> "/opt/spark/events/init/data",
-      "match_events" -> "/opt/spark/events/match/data",
-      "iap_events"   -> "/opt/spark/events/iap/data"
+      "init_events"  -> "/opt/spark/events/raw/init/data",
+      "match_events" -> "/opt/spark/events/raw/match/data",
+      "iap_events"   -> "/opt/spark/events/raw/iap/data"
     )
 
     // Schema Definitions for different event types

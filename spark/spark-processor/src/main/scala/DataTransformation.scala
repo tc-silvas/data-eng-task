@@ -16,8 +16,8 @@ object DataTransformation {
     val end_date = args(1)
 
     // Define input and output paths for Parquet files
-    val iapPath = "/opt/spark/events/iap/data"
-    val matchPath = "/opt/spark/events/match/data"
+    val iapPath = "/opt/spark/events/raw/iap/data"
+    val matchPath = "/opt/spark/events/raw/match/data"
     val iapOutputPath = "/opt/spark/events/transformations/iap"
     val matchOutputPath = "/opt/spark/events/transformations/match"
 

@@ -79,9 +79,9 @@ Visit [localhost:8080](http://localhost:8080) to verify that the EventProcessor 
 Check if the data is being stored correctly in Parquet format. Run the following commands to ensure that the folders are partitioned by day:
 
 ```bash
-ls events/iap/data
-ls events/match/data
-ls events/init/data
+ls events/raw/iap/data
+ls events/raw/match/data
+ls events/raw/init/data
 ```
 
 ### 4. Verify PostgreSQL Data
@@ -164,15 +164,15 @@ Press `CTRL + C` to stop the script once it's running. It will show as "Running"
 
 The following transformations will be applied:
 
-| Event Type | Column        | Transformation                                       |
-|------------|---------------|------------------------------------------------------|
-| **Init**   | `country`     | Map `country_id` to `country_name` using `Locale`    |
-|            | `platform`    | Convert to uppercase                                 |
-|            | Derived Field | Add `is_mobile` flag                                 |
-| **Match**  | `game-tier`   | Derive `is_tournament` flag (if `game-tier` is 5)    |
-|            | `platform`    | Convert to uppercase                                 |
-|            | `device`      | Convert to uppercase                                 |
-| **IAP**    | Derived Field | Add `purchase_category` and `is_high_value` flag     |
+| Event Type | Column        | Transformation                                                           |
+|------------|---------------|--------------------------------------------------------------------------|
+| **Init**   | `country`     | Map `country_id` to `country_name` using `Locale` (table unique_users)   |
+|            | `platform`    | Convert to uppercase (table unique_users)                                |
+|            | Derived Field | Add `is_mobile` flag (table unique_users)                                |
+| **Match**  | `game-tier`   | Derive `is_tournament` flag (if `game-tier` is 5)                        |
+|            | `platform`    | Convert to uppercase                                                     |
+|            | `device`      | Convert to uppercase                                                     |
+| **IAP**    | Derived Field | Add `purchase_category` and `is_high_value` flag                         |
 
 ### 5. Verify Transformed Data
 
