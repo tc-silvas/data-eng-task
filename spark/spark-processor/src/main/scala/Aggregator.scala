@@ -5,15 +5,17 @@ import java.util.Properties
 
 object Aggregator {
   def main(args: Array[String]): Unit = {
+    // Ensure correct number of arguments are passed
     if (args.length != 2) {
       println("Usage: UniqueUsersAggregator <start_date> <end_date>")
       sys.exit(1)
     }
 
+    // Parse input arguments
     val start_date = args(0)
     val end_date = args(1)
 
-    // Parquet paths
+    // Define input and output paths for Parquet files
     val inputPath = "/opt/spark/events/init/data"
     val outputPath = "/opt/spark/events/aggregated/daily_users"
 
@@ -24,12 +26,12 @@ object Aggregator {
     connectionProperties.setProperty("password", "password")
     connectionProperties.setProperty("driver", "org.postgresql.Driver")
 
-    // Initialize Spark
+    // Initialize Spark Session
     val spark = SparkSession.builder()
       .appName("Aggregator")
       .getOrCreate()
 
-    // UDF to map country_id to country_name using Locale
+    // User Defined Function (UDF) to map country_id to country_name using Locale
     val mapCountryIdToName = udf { (countryId: String) =>
       try {
         val locale = new Locale.Builder().setRegion(countryId).build()
@@ -39,12 +41,12 @@ object Aggregator {
       }
     }
 
-    // Read partitioned Parquet files, then filter by event_date
+    // Read partitioned Parquet files and filter by event_date range
     val initEventsDF = spark.read
       .parquet(inputPath)
       .where(col("event_date") >= start_date && col("event_date") <= end_date)
 
-    // Apply transformations in a single select
+    // Apply transformations to the DataFrame
     val transformedDF = initEventsDF.select(
       col("user_id"),
       mapCountryIdToName(col("country")).as("country_name"),
@@ -52,16 +54,16 @@ object Aggregator {
       col("event_date")
     )
 
-    // Aggregate unique users
+    // Aggregate unique users by event_date, country_name, and platform
     val aggregatedDF = transformedDF
       .groupBy("event_date", "country_name", "platform")
       .agg(countDistinct("user_id").alias("unique_users"))
 
-    // Add is_mobile flag
+    // Add is_mobile flag based on platform
     val finalDF = aggregatedDF
       .withColumn("is_mobile", when(col("platform").isin("IOS", "ANDROID"), true).otherwise(false))
 
-    // Write results to Parquet, partitioned by event_date
+    // Write the aggregated results to Parquet files, partitioned by event_date
     finalDF.write
       .mode("overwrite")
       .partitionBy("event_date")
@@ -69,13 +71,14 @@ object Aggregator {
 
     println(s"Aggregated data saved to: $outputPath")
 
-    // Write aggregated results to PostgreSQL
+    // Write the aggregated results to PostgreSQL table 'unique_users'
     finalDF.write
       .mode("overwrite")
       .jdbc(jdbcUrl, "unique_users", connectionProperties)
 
     println("Aggregated data saved to PostgreSQL table 'unique_users'")
 
+    // Stop the Spark session
     spark.stop()
   }
 }

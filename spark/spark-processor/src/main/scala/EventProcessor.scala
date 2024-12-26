@@ -6,6 +6,7 @@ import java.util.Properties
 
 object EventProcessor {
   def main(args: Array[String]): Unit = {
+    // Create a Spark Session
     val spark = SparkSession.builder
       .appName("EventProcessor")
       .getOrCreate()
@@ -18,7 +19,7 @@ object EventProcessor {
       "iap_events"   -> "/opt/spark/events/iap/data"
     )
 
-    // Schema Definitions
+    // Schema Definitions for different event types
     val initSchema = new StructType()
       .add("event_type", StringType)
       .add("time", LongType)
@@ -56,7 +57,7 @@ object EventProcessor {
     val jdbcUrl = "jdbc:postgresql://postgres:5432/game-events"
     val jdbcProperties = new Properties()
 
-    //NOT SECURE
+    // NOT SECURE: Set username and password for PostgreSQL connection
     jdbcProperties.setProperty("user", "user")
     jdbcProperties.setProperty("password", "password")
 
@@ -79,7 +80,7 @@ object EventProcessor {
                       jdbcProperties: java.util.Properties
                     ): Unit = {
 
-      // Read from Kafka
+      // Read data from Kafka
       val kafkaDF = spark.readStream
         .format("kafka")
         .option("kafka.bootstrap.servers", kafkaBootstrapServers)

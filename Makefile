@@ -1,5 +1,5 @@
 up:
-	@docker build -t spark_master . 
+	@docker build -t spark . 
 	@docker compose up -d
 consume-init:
 	@docker exec -it kafka /bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic init_events --from-beginning
