@@ -84,7 +84,7 @@ object DataTransformation {
 
     println("Aggregated data saved to PostgreSQL")
 
-    // Write transformed Match data to PostgreSQL table 'match_transformed'
+    // Stop the Spark session
     spark.stop()
   }
 }
